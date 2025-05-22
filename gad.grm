@@ -1,0 +1,112 @@
+"Name"     = 'Gad Language'
+"Author"   = 'Khaled'
+"Version"  = '1.0'
+"About"    = 'Gad a programming language that is similar to JavaScript and Go'
+"Start Symbol" = <Program>
+
+! -------------------------------------------------
+! Character Sets
+! -------------------------------------------------
+{ID Head}      = {Letter} + [_]
+{ID Tail}      = {Alphanumeric} + [_]
+{String Chars} = {Printable} + {HT} - ["\]
+
+! -------------------------------------------------
+! Terminals
+! -------------------------------------------------
+Identifier    = {ID Head}{ID Tail}*
+StringLiteral = '"' ( {String Chars} | '\' {Printable} )* '"'
+Integer       = {Digit}+
+Float         = {Digit}+ '.' {Digit}+
+
+! -------------------------------------------------
+! Rules
+! -------------------------------------------------
+<Program> ::= <StatementList>
+
+<StatementList> ::= 
+               | <StatementList> <Statement>
+               | <Statement>
+
+<Statement> ::= <VariableDeclaration> | <Assignment> 
+             | <IfStatement> | <WhileLoop> | <ForLoop>
+             | <FunctionDeclaration> | <ReturnStatement>
+             | <Block> | <BreakStatement> | <ContinueStatement>
+
+<VariableDeclaration> ::= 'var' Identifier '=' <Expression> ';'
+                       | 'const' Identifier '=' <Expression> ';'
+
+<Assignment> ::= Identifier '=' <Expression> ';'
+              | Identifier '+=' <Expression> ';'
+              | Identifier '-=' <Expression> ';'
+
+<Block> ::= '{' <StatementList> '}'
+
+<BreakStatement> ::= 'break' ';'
+
+<ContinueStatement> ::= 'continue' ';'
+
+<ReturnStatement> ::= 'return' <Expression> ';'
+                   | 'return' ';'
+
+<IfStatement> ::= 'if' '(' <Expression> ')' '{' <StatementList> '}'
+               | 'if' '(' <Expression> ')' '{' <StatementList> '}' 'else' '{' <StatementList> '}'
+
+<WhileLoop> ::= 'while' '(' <Expression> ')' '{' <StatementList> '}'
+
+<ForLoop> ::= 'for' '(' <Initialization> ';' <Expression> ';' <Update> ')' '{' <StatementList> '}'
+
+<Initialization> ::= 'var' Identifier '=' <Expression>
+                  | Identifier '=' <Expression>
+
+<Update> ::= Identifier '++'
+          | Identifier '--'
+          | Identifier '+=' <Expression>
+          | Identifier '-=' <Expression>
+
+<FunctionDeclaration> ::= 'func' Identifier '(' <ParameterList> ')' '{' <StatementList> '}'
+                       | 'func' Identifier '(' ')' '{' <StatementList> '}'
+
+<ParameterList> ::= Identifier
+                 | <ParameterList> ',' Identifier
+
+<Expression> ::= <Expression> '>' <Add Exp>
+              | <Expression> '<' <Add Exp>
+              | <Expression> '<=' <Add Exp>
+              | <Expression> '>=' <Add Exp>
+              | <Expression> '==' <Add Exp>
+              | <Expression> '!=' <Add Exp>
+              | <Expression> '&&' <Add Exp>
+              | <Expression> '||' <Add Exp>
+              | <Add Exp>
+
+<Add Exp> ::= <Add Exp> '+' <Mult Exp>
+           | <Add Exp> '-' <Mult Exp>
+           | <Mult Exp>
+
+<Mult Exp> ::= <Mult Exp> '*' <Unary Exp>
+            | <Mult Exp> '/' <Unary Exp>
+            | <Mult Exp> '%' <Unary Exp>
+            | <Unary Exp>
+
+<Unary Exp> ::= '-' <Value>
+             | '!' <Value>
+             | <Value>
+
+<Value> ::= Identifier
+         | Integer
+         | Float
+         | StringLiteral
+         | 'true'
+         | 'false'
+         | <FunctionCall>
+         | <ArrayAccess>
+         | '(' <Expression> ')'
+
+<FunctionCall> ::= Identifier '(' <ArgumentList> ')'
+                | Identifier '(' ')'
+
+<ArgumentList> ::= <Expression>
+                | <ArgumentList> ',' <Expression>
+
+<ArrayAccess> ::= Identifier '[' <Expression> ']'
